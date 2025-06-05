@@ -25,8 +25,13 @@ pub struct Credentials {
 
 impl Credentials {
     /// Tries to load credentials from the environment.
-    pub fn load_from_env() -> Option<Self> {
-        let cache_url = env::var("ACTIONS_CACHE_URL").ok()?;
+    pub fn load_from_env(gha_cache_server: Option<String>) -> Option<Self> {
+        let cache_url = if let Some(cache_url) = gha_cache_server {
+            cache_url
+        } else {
+            env::var("ACTIONS_CACHE_URL").ok()?
+        };
+
         let runtime_token = env::var("ACTIONS_RUNTIME_TOKEN").ok()?;
 
         Some(Self {

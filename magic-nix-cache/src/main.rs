@@ -91,6 +91,10 @@ struct Args {
     )]
     diagnostic_endpoint: String,
 
+    /// Github Actions Cache v1 API Server
+    #[arg(long)]
+    gha_cache_server: Option<String>,
+
     /// The FlakeHub API server.
     #[arg(long, default_value = "https://api.flakehub.com")]
     flakehub_api_server: reqwest::Url,
@@ -386,9 +390,8 @@ async fn main_cli() -> Result<()> {
     {
         tracing::info!("Loading credentials from environment");
 
-        let credentials = Credentials::load_from_env()
+        let credentials = Credentials::load_from_env(args.gha_cache_server)
             .with_context(|| "Failed to load credentials from environment (see README.md)")?;
-
         let gha_cache = gha::GhaCache::new(
             credentials,
             args.cache_version,
